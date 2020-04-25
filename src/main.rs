@@ -14,12 +14,17 @@ use tui::{
     Frame, Terminal,
 };
 
+/// A list of `String`s, bundled with state from tui-rs.
 struct StatefulList {
+    /// List state (from tui-rs crate).
     pub state: ListState,
+
+    /// List of items to display.
     pub items: Vec<String>,
 }
 
 impl StatefulList {
+    /// Create new, empty list.
     pub fn new() -> StatefulList {
         StatefulList {
             state: ListState::default(),
@@ -27,6 +32,7 @@ impl StatefulList {
         }
     }
 
+    /// Move to the next item. If already at the last one, stay there.
     pub fn next(&mut self) {
         let i = match self.state.selected() {
             None => 0,
@@ -43,6 +49,7 @@ impl StatefulList {
         self.state.select(Some(i));
     }
 
+    /// Move to the previous item. If already at the first one, stay there.
     pub fn previous(&mut self) {
         let i = match self.state.selected() {
             None => 0,
@@ -60,12 +67,17 @@ impl StatefulList {
     }
 }
 
+/// State of our application.
 struct App {
+    /// Should we quit on the next iteration of the event loop?
     pub should_quit: bool,
+
+    /// Feedlist.
     pub feeds: StatefulList,
 }
 
 impl App {
+    /// Create new, empty app.
     pub fn new() -> App {
         App {
             should_quit: false,
@@ -73,6 +85,7 @@ impl App {
         }
     }
 
+    /// Handle key `c` pressed by the user.
     pub fn on_key(&mut self, c: char) {
         if c == 'q' {
             self.should_quit = true;
@@ -80,14 +93,15 @@ impl App {
     }
 }
 
+/// Draw the application `app` to the screen `frame`.
 fn draw<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
     let layout = Layout::default()
         .constraints(
             [
-                Constraint::Length(1),
-                Constraint::Min(0),
-                Constraint::Length(1),
-                Constraint::Length(1),
+                Constraint::Length(1), // title
+                Constraint::Min(0),    // feedlist
+                Constraint::Length(1), // hints
+                Constraint::Length(1), // command line (TODO: implement)
             ]
             .as_ref(),
         )
@@ -124,12 +138,13 @@ fn draw<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
             .fg(Color::Yellow)
             .bg(Color::Blue)
             .modifier(Modifier::BOLD),
-    )];
+        )];
         let paragraph = Paragraph::new(hints.iter()).wrap(true);
         frame.render_widget(paragraph, layout[2]);
     }
 }
 
+/// Setup a termion terminal with alternate screen enabled.
 fn setup_termion_terminal() -> Result<
     Terminal<TermionBackend<AlternateScreen<MouseTerminal<RawTerminal<io::Stdout>>>>>,
     io::Error,
