@@ -1,7 +1,12 @@
-use easycurses;
 use std::{error::Error, io};
+use termion::{
+    event::Key,
+    input::{MouseTerminal, TermRead},
+    raw::{IntoRawMode, RawTerminal},
+    screen::AlternateScreen,
+};
 use tui::{
-    backend::{Backend, CursesBackend},
+    backend::{Backend, TermionBackend},
     layout::{Constraint, Layout},
     style::{Color, Modifier, Style},
     widgets::{Block, Paragraph, Text},
@@ -39,7 +44,7 @@ fn draw<B: Backend>(frame: &mut Frame<B>, _app: &mut App) {
 
     {
         let title = [Text::styled(
-            "Newsboat 2.20 (not really) - Your Feeds (0 unread, 0 total)",
+            "Newsboat 2.20 (ну, почти) - Your Feeds (0 unread, 0 total)",
             Style::default()
                 .fg(Color::Yellow)
                 .bg(Color::Blue)
@@ -64,48 +69,40 @@ fn draw<B: Backend>(frame: &mut Frame<B>, _app: &mut App) {
     }
 }
 
-fn setup_curses_terminal() -> Result<Terminal<CursesBackend>, io::Error> {
-    let mut backend = CursesBackend::new().ok_or(io::Error::new(
-        io::ErrorKind::Other,
-        "Failed to initialize curses backend",
-    ))?;
-    let curses = backend.get_curses_mut();
+fn setup_termion_terminal() -> Result<
+    Terminal<TermionBackend<AlternateScreen<MouseTerminal<RawTerminal<io::Stdout>>>>>,
+    io::Error,
+> {
+    let stdout = io::stdout().into_raw_mode()?;
+    let stdout = MouseTerminal::from(stdout);
+    let stdout = AlternateScreen::from(stdout);
 
-    curses.set_echo(false);
-
-    // The interface will be refreshed at least this often. Might be more often if user presses
-    // something.
-    const MAX_REFRESH_INTERVAL_MS: i32 = 500;
-    curses.set_input_timeout(easycurses::TimeoutMode::WaitUpTo(MAX_REFRESH_INTERVAL_MS));
-
-    curses.set_input_mode(easycurses::InputMode::RawCharacter);
-    curses.set_keypad_enabled(true);
+    let backend = TermionBackend::new(stdout);
 
     Terminal::new(backend)
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let mut terminal = setup_curses_terminal()?;
+    let mut terminal = setup_termion_terminal()?;
     terminal.hide_cursor()?;
 
     let mut app = App::new();
 
-    loop {
+    terminal.draw(|mut frame| draw(&mut frame, &mut app))?;
+
+    let stdin = io::stdin();
+    for event in stdin.keys() {
         terminal.draw(|mut frame| draw(&mut frame, &mut app))?;
 
-        match terminal.backend_mut().get_curses_mut().get_input() {
-            Some(input) => match input {
-                easycurses::Input::Character(c) => {
-                    app.on_key(c);
-                }
+        match event {
+            Ok(key) => match key {
+                Key::Char(c) => app.on_key(c),
 
                 _ => {}
             },
 
-            _ => {}
+            Err(_) => {}
         }
-
-        terminal.backend_mut().get_curses_mut().flush_input();
 
         if app.should_quit {
             break;

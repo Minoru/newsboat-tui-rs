@@ -7,8 +7,5 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-easycurses = "0.12"
-
-[dependencies.tui]
-version = "0.9"
-features = [ "curses" ]
+termion = "1"
+tui = "0.9"
