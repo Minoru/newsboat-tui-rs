@@ -23,7 +23,7 @@ impl App {
 
 fn draw<B: Backend>(_frame: &mut Frame<B>, _app: &mut App) {}
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn setup_curses_terminal() -> Result<Terminal<CursesBackend>, io::Error> {
     let mut backend = CursesBackend::new().ok_or(io::Error::new(
         io::ErrorKind::Other,
         "Failed to initialize curses backend",
@@ -35,7 +35,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     curses.set_input_mode(easycurses::InputMode::RawCharacter);
     curses.set_keypad_enabled(true);
 
-    let mut terminal = Terminal::new(backend)?;
+    Terminal::new(backend)
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let mut terminal = setup_curses_terminal()?;
     terminal.hide_cursor()?;
 
     let mut app = App::new();
@@ -44,7 +48,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         terminal.draw(|mut frame| draw(&mut frame, &mut app))?;
 
         match terminal.backend_mut().get_curses_mut().get_input() {
-            // TODO: why not call `get_input()` on `curses`?
             Some(input) => match input {
                 easycurses::Input::Character(c) => {
                     app.on_key(c);
