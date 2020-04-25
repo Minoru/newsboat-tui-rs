@@ -29,17 +29,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut terminal = setup_termion_terminal()?;
     terminal.hide_cursor()?;
 
-    let mut app = App::new();
-
-    app.feeds.items = vec![
-        "   1    (14/532) Planet Debian".to_string(),
-        "   2       (0/1) Интересное на ДОУ".to_string(),
-        "   3 N (23/4558) Fabio Franchino’s blog".to_string(),
-        "   4      (0/13) @prometheusmooc on Twitter".to_string(),
-        "   5    (12/482) /dev/lawyer".to_string(),
-        "   6 N   (3/148) non-O(n) musings".to_string(),
-    ];
-    app.feeds.state.select(Some(0));
+    let mut app = App::default();
 
     let mut stdin = async_stdin().keys();
     loop {
