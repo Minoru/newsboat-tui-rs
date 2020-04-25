@@ -31,7 +31,12 @@ fn setup_curses_terminal() -> Result<Terminal<CursesBackend>, io::Error> {
     let curses = backend.get_curses_mut();
 
     curses.set_echo(false);
-    curses.set_input_timeout(easycurses::TimeoutMode::WaitUpTo(60)); // milliseconds
+
+    // The interface will be refreshed at least this often. Might be more often if user presses
+    // something.
+    const MAX_REFRESH_INTERVAL_MS: i32 = 500;
+    curses.set_input_timeout(easycurses::TimeoutMode::WaitUpTo(MAX_REFRESH_INTERVAL_MS));
+
     curses.set_input_mode(easycurses::InputMode::RawCharacter);
     curses.set_keypad_enabled(true);
 
