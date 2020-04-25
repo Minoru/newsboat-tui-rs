@@ -1,5 +1,6 @@
-use std::{error::Error, io};
+use std::{error::Error, io, thread, time::Duration};
 use termion::{
+    async_stdin,
     event::Key,
     input::{MouseTerminal, TermRead},
     raw::{IntoRawMode, RawTerminal},
@@ -88,25 +89,27 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut app = App::new();
 
-    terminal.draw(|mut frame| draw(&mut frame, &mut app))?;
-
-    let stdin = io::stdin();
-    for event in stdin.keys() {
+    let mut stdin = async_stdin().keys();
+    loop {
         terminal.draw(|mut frame| draw(&mut frame, &mut app))?;
 
-        match event {
-            Ok(key) => match key {
-                Key::Char(c) => app.on_key(c),
+        if let Some(event) = stdin.next() {
+            match event {
+                Ok(key) => match key {
+                    Key::Char(c) => app.on_key(c),
 
-                _ => {}
-            },
+                    _ => {}
+                },
 
-            Err(_) => {}
+                Err(_) => {}
+            }
+
+            if app.should_quit {
+                break;
+            }
         }
 
-        if app.should_quit {
-            break;
-        }
+        thread::sleep(Duration::from_millis(100));
     }
 
     Ok(())
