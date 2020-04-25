@@ -2,7 +2,7 @@ use std::{error::Error, io, thread, time::Duration};
 use termion::{
     async_stdin,
     event::Key,
-    input::{MouseTerminal, TermRead},
+    input::TermRead,
     raw::{IntoRawMode, RawTerminal},
     screen::AlternateScreen,
 };
@@ -145,12 +145,9 @@ fn draw<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
 }
 
 /// Setup a termion terminal with alternate screen enabled.
-fn setup_termion_terminal() -> Result<
-    Terminal<TermionBackend<AlternateScreen<MouseTerminal<RawTerminal<io::Stdout>>>>>,
-    io::Error,
-> {
+fn setup_termion_terminal(
+) -> Result<Terminal<TermionBackend<AlternateScreen<RawTerminal<io::Stdout>>>>, io::Error> {
     let stdout = io::stdout().into_raw_mode()?;
-    let stdout = MouseTerminal::from(stdout);
     let stdout = AlternateScreen::from(stdout);
 
     let backend = TermionBackend::new(stdout);
