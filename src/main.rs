@@ -53,9 +53,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             if app.should_quit {
                 break;
             }
+        } else {
+            thread::sleep(Duration::from_millis(100));
         }
-
-        thread::sleep(Duration::from_millis(100));
     }
 
     Ok(())
