@@ -2,6 +2,9 @@ use easycurses;
 use std::{error::Error, io};
 use tui::{
     backend::{Backend, CursesBackend},
+    layout::{Constraint, Layout},
+    style::{Color, Modifier, Style},
+    widgets::{Block, Paragraph, Text},
     Frame, Terminal,
 };
 
@@ -21,7 +24,45 @@ impl App {
     }
 }
 
-fn draw<B: Backend>(_frame: &mut Frame<B>, _app: &mut App) {}
+fn draw<B: Backend>(frame: &mut Frame<B>, _app: &mut App) {
+    let layout = Layout::default()
+        .constraints(
+            [
+                Constraint::Length(2),
+                Constraint::Min(0),
+                Constraint::Length(2),
+                Constraint::Length(2),
+            ]
+            .as_ref(),
+        )
+        .split(frame.size());
+
+    {
+        let title = [Text::styled(
+            "Newsboat 2.20 (not really) - Your Feeds (0 unread, 0 total)",
+            Style::default()
+                .fg(Color::Yellow)
+                .bg(Color::Blue)
+                .modifier(Modifier::BOLD),
+        )];
+        let block = Block::default();
+        let paragraph = Paragraph::new(title.iter()).block(block).wrap(true);
+        frame.render_widget(paragraph, layout[0]);
+    }
+
+    {
+        let hints = [Text::styled(
+        "ESC,q:Quit ENTER:open n:Next Unread r:Reload R:Reload All A:Mark Read C:Mark All Read /:Search ?:Help",
+        Style::default()
+            .fg(Color::Yellow)
+            .bg(Color::Blue)
+            .modifier(Modifier::BOLD),
+    )];
+        let block = Block::default();
+        let paragraph = Paragraph::new(hints.iter()).block(block).wrap(true);
+        frame.render_widget(paragraph, layout[2]);
+    }
+}
 
 fn setup_curses_terminal() -> Result<Terminal<CursesBackend>, io::Error> {
     let mut backend = CursesBackend::new().ok_or(io::Error::new(
