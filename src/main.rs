@@ -10,7 +10,7 @@ use tui::{
     backend::{Backend, TermionBackend},
     layout::{Constraint, Layout},
     style::{Color, Modifier, Style},
-    widgets::{Block, Paragraph, Text},
+    widgets::{Paragraph, Text},
     Frame, Terminal,
 };
 
@@ -34,10 +34,10 @@ fn draw<B: Backend>(frame: &mut Frame<B>, _app: &mut App) {
     let layout = Layout::default()
         .constraints(
             [
-                Constraint::Length(2),
+                Constraint::Length(1),
                 Constraint::Min(0),
-                Constraint::Length(2),
-                Constraint::Length(2),
+                Constraint::Length(1),
+                Constraint::Length(1),
             ]
             .as_ref(),
         )
@@ -51,8 +51,7 @@ fn draw<B: Backend>(frame: &mut Frame<B>, _app: &mut App) {
                 .bg(Color::Blue)
                 .modifier(Modifier::BOLD),
         )];
-        let block = Block::default();
-        let paragraph = Paragraph::new(title.iter()).block(block).wrap(true);
+        let paragraph = Paragraph::new(title.iter()).wrap(true);
         frame.render_widget(paragraph, layout[0]);
     }
 
@@ -64,8 +63,7 @@ fn draw<B: Backend>(frame: &mut Frame<B>, _app: &mut App) {
             .bg(Color::Blue)
             .modifier(Modifier::BOLD),
     )];
-        let block = Block::default();
-        let paragraph = Paragraph::new(hints.iter()).block(block).wrap(true);
+        let paragraph = Paragraph::new(hints.iter()).wrap(true);
         frame.render_widget(paragraph, layout[2]);
     }
 }
