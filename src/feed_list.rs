@@ -1,5 +1,6 @@
 //! List of feeds.
 
+use termion::event::Key;
 use tui::{
     backend::Backend,
     layout::{Constraint, Layout},
@@ -82,6 +83,17 @@ impl FeedList {
         )];
             let paragraph = Paragraph::new(hints.iter()).wrap(true);
             frame.render_widget(paragraph, layout[2]);
+        }
+    }
+
+    /// Handle key `key` pressed by the user while in feedlist.
+    pub fn handle_key(&mut self, key: Key) {
+        match key {
+            Key::Up => self.state.previous(),
+
+            Key::Down => self.state.next(),
+
+            _ => {}
         }
     }
 }

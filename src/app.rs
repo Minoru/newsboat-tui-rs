@@ -28,11 +28,7 @@ impl App {
         match key {
             Key::Char(c) if c == 'q' => self.should_quit = true,
 
-            Key::Up => self.feeds.state.previous(),
-
-            Key::Down => self.feeds.state.next(),
-
-            _ => {}
+            other => self.feeds.handle_key(other),
         }
     }
 
