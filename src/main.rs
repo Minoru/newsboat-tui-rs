@@ -7,9 +7,9 @@ use termion::{
 use tui::{backend::TermionBackend, Terminal};
 
 mod app;
+mod feedlist;
 mod input_reader;
 mod stateful_list;
-mod ui;
 
 use app::App;
 use input_reader::InputReader;
@@ -33,7 +33,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let input = InputReader::new();
     loop {
-        terminal.draw(|mut frame| ui::draw(&mut frame, &mut app))?;
+        terminal.draw(|mut frame| feedlist::draw(&mut frame, &mut app))?;
 
         match input.next()? {
             Key::Char(c) => app.on_key(c),

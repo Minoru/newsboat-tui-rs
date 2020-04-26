@@ -1,4 +1,4 @@
-//! Code for drawing application's user interface.
+//! Code for drawing a list of feeds.
 
 use tui::{
     backend::Backend,
@@ -10,7 +10,7 @@ use tui::{
 
 use crate::app::App;
 
-/// Draw the application `app` to the screen `frame`.
+/// Draw list of feeds from application `app` to the window `frame`.
 pub fn draw<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
     let layout = Layout::default()
         .constraints(
