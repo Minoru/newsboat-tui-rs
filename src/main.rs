@@ -1,6 +1,5 @@
 use std::{error::Error, io};
 use termion::{
-    event::Key,
     raw::{IntoRawMode, RawTerminal},
     screen::AlternateScreen,
 };
@@ -35,15 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     loop {
         terminal.draw(|mut frame| feedlist::draw(&mut frame, &mut app))?;
 
-        match input.next()? {
-            Key::Char(c) => app.on_key(c),
-
-            Key::Up => app.feeds.previous(),
-
-            Key::Down => app.feeds.next(),
-
-            _ => {}
-        };
+        app.handle_key(input.next()?);
 
         if app.should_quit {
             break;

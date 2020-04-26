@@ -1,5 +1,7 @@
 //! State and the behaviour of the application.
 
+use termion::event::Key;
+
 use crate::stateful_list::StatefulList;
 
 /// State of our application.
@@ -20,10 +22,16 @@ impl App {
         }
     }
 
-    /// Handle key `c` pressed by the user.
-    pub fn on_key(&mut self, c: char) {
-        if c == 'q' {
-            self.should_quit = true;
+    /// Handle key `key` pressed by the user.
+    pub fn handle_key(&mut self, key: Key) {
+        match key {
+            Key::Char(c) if c == 'q' => self.should_quit = true,
+
+            Key::Up => self.feeds.previous(),
+
+            Key::Down => self.feeds.next(),
+
+            _ => {}
         }
     }
 }
