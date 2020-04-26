@@ -8,7 +8,7 @@ use tui::{backend::TermionBackend, Terminal};
 
 mod app;
 mod input_reader;
-mod statefullist;
+mod stateful_list;
 mod ui;
 
 use app::App;

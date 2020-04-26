@@ -1,6 +1,6 @@
 //! State and the behaviour of the application.
 
-use crate::statefullist::StatefulList;
+use crate::stateful_list::StatefulList;
 
 /// State of our application.
 pub struct App {
