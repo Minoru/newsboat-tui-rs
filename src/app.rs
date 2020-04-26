@@ -1,7 +1,9 @@
 //! State and the behaviour of the application.
 
 use termion::event::Key;
+use tui::{backend::Backend, terminal::Frame};
 
+use crate::feedlist;
 use crate::stateful_list::StatefulList;
 
 /// State of our application.
@@ -33,6 +35,11 @@ impl App {
 
             _ => {}
         }
+    }
+
+    /// Draw the app to the screen `frame`.
+    pub fn draw<B: Backend>(&mut self, frame: &mut Frame<B>) {
+        feedlist::draw(frame, self);
     }
 }
 

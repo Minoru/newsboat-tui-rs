@@ -32,7 +32,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let input = InputReader::new();
     loop {
-        terminal.draw(|mut frame| feedlist::draw(&mut frame, &mut app))?;
+        terminal.draw(|mut frame| app.draw(&mut frame))?;
 
         app.handle_key(input.next()?);
 
