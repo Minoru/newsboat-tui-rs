@@ -1,18 +1,18 @@
-use std::{error::Error, io, thread, time::Duration};
+use std::{error::Error, io};
 use termion::{
-    async_stdin,
     event::Key,
-    input::TermRead,
     raw::{IntoRawMode, RawTerminal},
     screen::AlternateScreen,
 };
 use tui::{backend::TermionBackend, Terminal};
 
 mod app;
+mod input_reader;
 mod statefullist;
 mod ui;
 
 use app::App;
+use input_reader::InputReader;
 
 /// Setup a termion terminal with alternate screen enabled.
 fn setup_termion_terminal(
@@ -31,30 +31,22 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut app = App::default();
 
-    let mut stdin = async_stdin().keys();
+    let input = InputReader::new();
     loop {
         terminal.draw(|mut frame| ui::draw(&mut frame, &mut app))?;
 
-        if let Some(event) = stdin.next() {
-            match event {
-                Ok(key) => match key {
-                    Key::Char(c) => app.on_key(c),
+        match input.next()? {
+            Key::Char(c) => app.on_key(c),
 
-                    Key::Up => app.feeds.previous(),
+            Key::Up => app.feeds.previous(),
 
-                    Key::Down => app.feeds.next(),
+            Key::Down => app.feeds.next(),
 
-                    _ => {}
-                },
+            _ => {}
+        };
 
-                Err(_) => {}
-            }
-
-            if app.should_quit {
-                break;
-            }
-        } else {
-            thread::sleep(Duration::from_millis(100));
+        if app.should_quit {
+            break;
         }
     }
 
