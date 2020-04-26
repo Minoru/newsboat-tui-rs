@@ -28,7 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut terminal = setup_termion_terminal()?;
     terminal.hide_cursor()?;
 
-    let mut app = App::default();
+    let mut app = App::new();
 
     let input = InputReader::new();
     loop {
