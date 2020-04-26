@@ -3,7 +3,7 @@
 use termion::event::Key;
 use tui::{backend::Backend, terminal::Frame};
 
-use crate::feed_list::{self, FeedList};
+use crate::feed_list::FeedList;
 
 /// State of our application.
 pub struct App {
@@ -38,6 +38,6 @@ impl App {
 
     /// Draw the app to the screen `frame`.
     pub fn draw<B: Backend>(&mut self, frame: &mut Frame<B>) {
-        feed_list::draw(frame, self);
+        self.feeds.draw(frame);
     }
 }
