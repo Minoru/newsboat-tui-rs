@@ -75,12 +75,12 @@ impl FeedList {
 
         {
             let hints = [Text::styled(
-        "ESC,q:Quit ENTER:open n:Next Unread r:Reload R:Reload All A:Mark Read C:Mark All Read /:Search ?:Help",
-        Style::default()
-            .fg(Color::Yellow)
-            .bg(Color::Blue)
-            .modifier(Modifier::BOLD),
-        )];
+                "q:Quit UP:Previous DOWN:Next",
+                Style::default()
+                    .fg(Color::Yellow)
+                    .bg(Color::Blue)
+                    .modifier(Modifier::BOLD),
+            )];
             let paragraph = Paragraph::new(hints.iter()).wrap(true);
             frame.render_widget(paragraph, layout[2]);
         }
