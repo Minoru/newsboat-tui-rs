@@ -38,6 +38,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         match events.next()? {
             Event::Key(key) => app.handle_key(key),
+
+            Event::TerminalResized => {
+                // Do nothing. We'll redraw the UI on the next iteration anyway.
+            }
         }
 
         if app.should_quit {

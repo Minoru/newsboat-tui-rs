@@ -6,5 +6,3 @@
 - implement highlighting keywords in itemlist
 - look through ~/src/newsboat/TODO_global for other things that I might wish to
   try and implement here
-- make the UI react to terminal resizes (right now it simply waits for
-  a keypress to redraw itself)

@@ -9,3 +9,5 @@ edition = "2018"
 [dependencies]
 termion = "1"
 tui = "0.9"
+signal-hook = "0.1"
+libc = "0.2"
