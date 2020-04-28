@@ -12,38 +12,38 @@ use tui::{
 use crate::form_action::FormAction;
 use crate::stateful_list::StatefulList;
 
-/// List of feeds.
-pub struct FeedList {
-    /// The state of the feedlist (what items it contains, what item is currently selected)
+/// List of items.
+pub struct ItemList {
+    /// The state of the itemlist (what items it contains, what item is currently selected)
     pub state: StatefulList,
 }
 
-impl FeedList {
-    /// Create example feedlist.
-    pub fn new() -> FeedList {
+impl ItemList {
+    /// Create example itemlist.
+    pub fn new() -> ItemList {
         let mut state = StatefulList::new();
 
         state.items = vec![
-            "   1    (14/532) Planet Debian".to_string(),
-            "   2       (0/1) Интересное на ДОУ".to_string(),
-            "   3 N (23/4558) Fabio Franchino’s blog".to_string(),
-            "   4      (0/13) @prometheusmooc on Twitter".to_string(),
-            "   5    (12/482) /dev/lawyer".to_string(),
-            "   6 N   (3/148) non-O(n) musings".to_string(),
+            "   1    Apr 28   3.9K  NVidia acquires Mellanox".to_string(),
+            "   2    Apr 28    591  [$] Dumping kernel data structure with BPF".to_string(),
+            "   3    Apr 28    971  Wooden server rack".to_string(),
+            "   4    Apr 28   2.2K  Trouble fully setting up baremetal homelab".to_string(),
+            "   5    Apr 28    548  Looking for a very small server with 2 plus hot swap 3.5 inch driver I can install linux on.".to_string(),
+            "   6    Apr 28   1.7K  VLAN and iOT devices".to_string(),
         ];
         state.state.select(Some(0));
 
-        FeedList { state }
+        ItemList { state }
     }
 }
 
-impl<B: Backend> FormAction<B> for FeedList {
+impl<B: Backend> FormAction<B> for ItemList {
     fn draw(&mut self, frame: &mut Frame<B>) {
         let layout = Layout::default()
             .constraints(
                 [
                     Constraint::Length(1), // title
-                    Constraint::Min(0),    // feedlist
+                    Constraint::Min(0),    // itemlist
                     Constraint::Length(1), // hints
                     Constraint::Length(1), // command line (TODO: implement)
                 ]
@@ -53,7 +53,7 @@ impl<B: Backend> FormAction<B> for FeedList {
 
         {
             let title = [Text::styled(
-                "Newsboat 2.20 (ну, почти) - Your Feeds (0 unread, 0 total)",
+                "Newsboat 2.20 (ну, почти) - Example Feed (0 unread, 0 total)",
                 Style::default()
                     .fg(Color::Yellow)
                     .bg(Color::Blue)

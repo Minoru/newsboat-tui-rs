@@ -9,6 +9,7 @@ mod app;
 mod feed_list;
 mod form_action;
 mod input_reader;
+mod item_list;
 mod stateful_list;
 
 use app::App;
