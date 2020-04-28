@@ -62,9 +62,7 @@ impl<B: Backend> FormAction<B> for FeedList {
                     .bg(Color::Blue)
                     .modifier(Modifier::BOLD),
             )];
-            let paragraph = Paragraph::new(title.iter())
-                .wrap(true)
-                .style(Style::default().bg(Color::Blue));
+            let paragraph = Paragraph::new(title.iter()).style(Style::default().bg(Color::Blue));
             frame.render_widget(paragraph, layout[0]);
         }
 
@@ -88,9 +86,7 @@ impl<B: Backend> FormAction<B> for FeedList {
                     .bg(Color::Blue)
                     .modifier(Modifier::BOLD),
             )];
-            let paragraph = Paragraph::new(hints.iter())
-                .wrap(true)
-                .style(Style::default().bg(Color::Blue));
+            let paragraph = Paragraph::new(hints.iter()).style(Style::default().bg(Color::Blue));
             frame.render_widget(paragraph, layout[2]);
         }
     }
