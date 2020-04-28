@@ -1,4 +1,3 @@
-- make background colors in title and hints span the whole width of the screen
 - implement a simple command line with ":quit" command
 - implement sample itemview with enough text to demonstrate scrolling
 - demonstrate running an interactive command (`mc`?) (requires switching to-fro
@@ -7,3 +6,5 @@
 - implement highlighting keywords in itemlist
 - look through ~/src/newsboat/TODO_global for other things that I might wish to
   try and implement here
+- make the UI react to terminal resizes (right now it simply waits for
+  a keypress to redraw itself)
