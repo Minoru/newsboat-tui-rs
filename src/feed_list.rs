@@ -1,5 +1,6 @@
 //! List of feeds.
 
+use std::{cell::RefCell, rc::Rc};
 use termion::event::Key;
 use tui::{
     backend::Backend,
@@ -11,6 +12,7 @@ use tui::{
 
 use crate::app::App;
 use crate::form_action::FormAction;
+use crate::item_list::ItemList;
 use crate::stateful_list::StatefulList;
 
 /// List of feeds.
@@ -78,7 +80,7 @@ impl<B: Backend> FormAction<B> for FeedList {
 
         {
             let hints = [Text::styled(
-                "q:Quit UP:Previous DOWN:Next",
+                "q:Quit UP:Previous DOWN:Next ENTER:Open Article",
                 Style::default()
                     .fg(Color::Yellow)
                     .bg(Color::Blue)
@@ -91,7 +93,15 @@ impl<B: Backend> FormAction<B> for FeedList {
 
     fn handle_key(&mut self, key: Key, app: &mut App<B>) {
         match key {
-            Key::Char(c) if c == 'q' => app.should_quit = true,
+            Key::Char(c) => match c {
+                'q' => app.should_quit = true,
+
+                '\n' => app
+                    .formaction_stack
+                    .push(Rc::new(RefCell::new(ItemList::new()))),
+
+                _ => {}
+            },
 
             Key::Up => self.state.previous(),
 

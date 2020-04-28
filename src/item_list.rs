@@ -78,7 +78,7 @@ impl<B: Backend> FormAction<B> for ItemList {
 
         {
             let hints = [Text::styled(
-                "q:Quit UP:Previous DOWN:Next x:Switch Dialog",
+                "q:Quit UP:Previous DOWN:Next",
                 Style::default()
                     .fg(Color::Yellow)
                     .bg(Color::Blue)
@@ -89,8 +89,15 @@ impl<B: Backend> FormAction<B> for ItemList {
         }
     }
 
-    fn handle_key(&mut self, key: Key, _app: &mut App<B>) {
+    fn handle_key(&mut self, key: Key, app: &mut App<B>) {
         match key {
+            Key::Char(c) if c == 'q' => {
+                // The key got passed to us, which means we're on top of the stack. Thus, we're
+                // sure this returns Some() with an Rc that holds us. We drop it, thus this dialog
+                // is removed and cleaned up.
+                let _ = app.formaction_stack.pop();
+            }
+
             Key::Up => self.state.previous(),
 
             Key::Down => self.state.next(),
