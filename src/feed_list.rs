@@ -9,6 +9,7 @@ use tui::{
     Frame,
 };
 
+use crate::app::App;
 use crate::form_action::FormAction;
 use crate::stateful_list::StatefulList;
 
@@ -77,7 +78,7 @@ impl<B: Backend> FormAction<B> for FeedList {
 
         {
             let hints = [Text::styled(
-                "q:Quit UP:Previous DOWN:Next x:Switch Dialog",
+                "q:Quit UP:Previous DOWN:Next",
                 Style::default()
                     .fg(Color::Yellow)
                     .bg(Color::Blue)
@@ -88,7 +89,7 @@ impl<B: Backend> FormAction<B> for FeedList {
         }
     }
 
-    fn handle_key(&mut self, key: Key) {
+    fn handle_key(&mut self, key: Key, _app: &mut App<B>) {
         match key {
             Key::Up => self.state.previous(),
 
