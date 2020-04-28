@@ -3,6 +3,9 @@
 - demonstrate running an interactive command (`mc`?) (requires switching to-fro
   alternate screen)
 - implement switching between dialogs
-- implement highlighting keywords in itemlist
 - look through ~/src/newsboat/TODO_global for other things that I might wish to
   try and implement here
+
+
+Unimplementable:
+- implement highlighting keywords in itemlist -- https://github.com/fdehau/tui-rs/issues/118
