@@ -89,8 +89,10 @@ impl<B: Backend> FormAction<B> for FeedList {
         }
     }
 
-    fn handle_key(&mut self, key: Key, _app: &mut App<B>) {
+    fn handle_key(&mut self, key: Key, app: &mut App<B>) {
         match key {
+            Key::Char(c) if c == 'q' => app.should_quit = true,
+
             Key::Up => self.state.previous(),
 
             Key::Down => self.state.next(),

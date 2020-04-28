@@ -45,24 +45,12 @@ impl<B: Backend> App<B> {
 
     /// Handle key `key` pressed by the user.
     pub fn handle_key(&mut self, key: Key) {
-        match key {
-            Key::Char(c) => match c {
-                'q' => self.should_quit = true,
+        let formaction = match self.formaction_stack.last() {
+            None => unreachable!("All formactions closed, but the app is still running"),
 
-                _ => {}
-            },
-
-            other => {
-                let formaction = match self.formaction_stack.last() {
-                    None => {
-                        unreachable!("All formactions closed, but the app is still running");
-                    }
-
-                    Some(formaction) => formaction.clone(),
-                };
-                formaction.borrow_mut().handle_key(other, self);
-            }
-        }
+            Some(formaction) => formaction.clone(),
+        };
+        formaction.borrow_mut().handle_key(key, self);
     }
 
     /// Draw the app to the screen `frame`.
