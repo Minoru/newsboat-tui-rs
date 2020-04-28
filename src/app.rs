@@ -43,24 +43,36 @@ impl<B: Backend> App<B> {
         }
     }
 
-    /// Handle key `key` pressed by the user.
-    pub fn handle_key(&mut self, key: Key) {
+    /// Helper function for doing something with current formaction.
+    ///
+    /// The closure passed to this method takes two parameters:
+    /// - first one is an Rc with current formaction;
+    /// - second one is a mutable reference to Self, i.e. this method passes through the `self` on
+    ///   which it was called. That `self` is no longer borrowed at this point, so you can safely
+    ///   pass it as a parameter to something, or call more methods on it.
+    fn with_current_formaction<T, F>(&mut self, f: F) -> T
+    where
+        F: FnOnce(Rc<RefCell<dyn FormAction<B>>>, &mut Self) -> T,
+    {
         let formaction = match self.formaction_stack.last() {
             None => unreachable!("All formactions closed, but the app is still running"),
 
             Some(formaction) => formaction.clone(),
         };
-        formaction.borrow_mut().handle_key(key, self);
+        f(formaction, self)
+    }
+
+    /// Handle key `key` pressed by the user.
+    pub fn handle_key(&mut self, key: Key) {
+        self.with_current_formaction(|formaction, app| {
+            formaction.borrow_mut().handle_key(key, app);
+        });
     }
 
     /// Draw the app to the screen `frame`.
     pub fn draw(&mut self, frame: &mut Frame<B>) {
-        // TODO: the same code exists in handle_key above consolidate that somehow
-        let formaction = match self.formaction_stack.last() {
-            None => unreachable!("All formactions closed, but the app is still running"),
-
-            Some(formaction) => formaction.clone(),
-        };
-        formaction.borrow_mut().draw(frame);
+        self.with_current_formaction(|formaction, _app| {
+            formaction.borrow_mut().draw(frame);
+        });
     }
 }
