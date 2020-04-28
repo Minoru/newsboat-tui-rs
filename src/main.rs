@@ -7,6 +7,7 @@ use tui::{backend::TermionBackend, Terminal};
 
 mod app;
 mod feed_list;
+mod form_action;
 mod input_reader;
 mod stateful_list;
 

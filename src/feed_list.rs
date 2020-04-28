@@ -9,6 +9,7 @@ use tui::{
     Frame,
 };
 
+use crate::form_action::FormAction;
 use crate::stateful_list::StatefulList;
 
 /// List of feeds.
@@ -34,9 +35,10 @@ impl FeedList {
 
         FeedList { state }
     }
+}
 
-    /// Draw this list of feeds to the window `frame`.
-    pub fn draw<B: Backend>(&mut self, frame: &mut Frame<B>) {
+impl<B: Backend> FormAction<B> for FeedList {
+    fn draw(&mut self, frame: &mut Frame<B>) {
         let layout = Layout::default()
             .constraints(
                 [
@@ -86,8 +88,7 @@ impl FeedList {
         }
     }
 
-    /// Handle key `key` pressed by the user while in feedlist.
-    pub fn handle_key(&mut self, key: Key) {
+    fn handle_key(&mut self, key: Key) {
         match key {
             Key::Up => self.state.previous(),
 

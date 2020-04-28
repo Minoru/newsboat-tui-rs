@@ -4,22 +4,23 @@ use termion::event::Key;
 use tui::{backend::Backend, terminal::Frame};
 
 use crate::feed_list::FeedList;
+use crate::form_action::FormAction;
 
 /// State of our application.
-pub struct App {
+pub struct App<B: Backend> {
     /// Should we quit on the next iteration of the event loop?
     pub should_quit: bool,
 
     /// Feedlist.
-    pub feeds: FeedList,
+    pub feeds: Box<dyn FormAction<B>>,
 }
 
-impl App {
+impl<B: Backend> App<B> {
     /// Create new, empty app.
-    pub fn new() -> App {
+    pub fn new() -> App<B> {
         App {
             should_quit: false,
-            feeds: FeedList::new(),
+            feeds: Box::new(FeedList::new()),
         }
     }
 
@@ -33,7 +34,7 @@ impl App {
     }
 
     /// Draw the app to the screen `frame`.
-    pub fn draw<B: Backend>(&mut self, frame: &mut Frame<B>) {
+    pub fn draw(&mut self, frame: &mut Frame<B>) {
         self.feeds.draw(frame);
     }
 }
