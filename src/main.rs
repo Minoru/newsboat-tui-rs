@@ -6,14 +6,14 @@ use termion::{
 use tui::{backend::TermionBackend, Terminal};
 
 mod app;
+mod events_source;
 mod feed_list;
 mod form_action;
-mod input_reader;
 mod item_list;
 mod stateful_list;
 
 use app::App;
-use input_reader::InputReader;
+use events_source::{Event, EventsSource};
 
 /// Setup a termion terminal with alternate screen enabled.
 fn setup_termion_terminal(
@@ -32,11 +32,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut app = App::new();
 
-    let input = InputReader::new();
+    let events = EventsSource::new();
     loop {
         terminal.draw(|mut frame| app.draw(&mut frame))?;
 
-        app.handle_key(input.next()?);
+        match events.next()? {
+            Event::Key(key) => app.handle_key(key),
+        }
 
         if app.should_quit {
             break;
