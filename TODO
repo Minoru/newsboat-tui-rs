@@ -5,6 +5,7 @@
 - implement switching between dialogs
 - look through ~/src/newsboat/TODO_global for other things that I might wish to
   try and implement here
+- check if word-wrapping makes URLs partly unclickable
 
 
 Unimplementable:
