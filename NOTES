@@ -1,0 +1,3 @@
+Unimplementable:
+- implement highlighting keywords in itemlist -- https://github.com/fdehau/tui-rs/issues/118
+    - see if I can get around this my implementing my own list widget
