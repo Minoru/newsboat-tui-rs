@@ -80,7 +80,7 @@ impl<B: Backend> FormAction<B> for FeedList {
 
         {
             let hints = [Text::styled(
-                "q:Quit UP:Previous DOWN:Next ENTER:Open Article",
+                "q:Quit UP:Previous DOWN:Next ENTER:Open",
                 Style::default()
                     .fg(Color::Yellow)
                     .bg(Color::Blue)
