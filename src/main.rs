@@ -10,6 +10,7 @@ mod events_source;
 mod feed_list;
 mod form_action;
 mod item_list;
+mod item_view;
 mod stateful_list;
 
 use app::App;

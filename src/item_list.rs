@@ -1,5 +1,6 @@
 //! List of feeds.
 
+use std::{cell::RefCell, rc::Rc};
 use termion::event::Key;
 use tui::{
     backend::Backend,
@@ -11,6 +12,7 @@ use tui::{
 
 use crate::app::App;
 use crate::form_action::FormAction;
+use crate::item_view::ItemView;
 use crate::stateful_list::StatefulList;
 
 /// List of items.
@@ -80,7 +82,7 @@ impl<B: Backend> FormAction<B> for ItemList {
 
         {
             let hints = [Text::styled(
-                "q:Quit UP:Previous DOWN:Next",
+                "q:Quit UP:Previous DOWN:Next ENTER:Open",
                 Style::default()
                     .fg(Color::Yellow)
                     .bg(Color::Blue)
@@ -95,12 +97,20 @@ impl<B: Backend> FormAction<B> for ItemList {
 
     fn handle_key(&mut self, key: Key, app: &mut App<B>) {
         match key {
-            Key::Char(c) if c == 'q' => {
-                // The key got passed to us, which means we're on top of the stack. Thus, we're
-                // sure this returns Some() with an Rc that holds us. We drop it, thus this dialog
-                // is removed and cleaned up.
-                let _ = app.formaction_stack.pop();
-            }
+            Key::Char(c) => match c {
+                'q' => {
+                    // The key got passed to us, which means we're on top of the stack. Thus, we're
+                    // sure this returns Some() with an Rc that holds us. We drop it, thus this dialog
+                    // is removed and cleaned up.
+                    let _ = app.formaction_stack.pop();
+                }
+
+                '\n' => app
+                    .formaction_stack
+                    .push(Rc::new(RefCell::new(ItemView::new()))),
+
+                _ => {}
+            },
 
             Key::Up => self.state.previous(),
 

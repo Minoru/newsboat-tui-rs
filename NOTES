@@ -1,3 +1,12 @@
+Hard:
+- the API actively discourages storing `Text` values and anything that derives
+  from them, e.g. `Paragraph`. (It's discouraged by references; I couldn't
+  figure out a way to store this stuff in a struct.) `Text` and `Paragraph`
+  have to be rebuilt before displaying a frame. I'm ok with rebuilding
+  `Paragraph`, since it's relatively lightweight thing. `Text`, on the other
+  hand, should contain formatting (although it can't properly in tui-rs);
+  re-formatting the whole article on each repaint is... wrong.
+
 Unimplementable:
 - implement highlighting keywords in itemlist -- https://github.com/fdehau/tui-rs/issues/118
     - see if I can get around this my implementing my own list widget
