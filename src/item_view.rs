@@ -63,7 +63,18 @@ impl<B: Backend> FormAction<B> for ItemView {
         }
 
         {
-            let text = self.text.iter().map(Text::raw).collect::<Vec<_>>();
+            let text = {
+                let mut text = vec![
+                    Text::raw("Feed: Example feed\n"),
+                    Text::raw("Title: An interesting article\n"),
+                    Text::raw("Link: https://example.com/an-interesting-article.html\n"),
+                    Text::raw("Date: Mon, 02 Mar 2004 05:06:07 +0800\n"),
+                    Text::raw("\n"),
+                ];
+                text.extend(self.text.iter().map(Text::raw));
+                text
+            };
+
             let paragraph = Paragraph::new(text.iter())
                 // This is cheating. In real Newsboat, word wrapping is done beforehand, and UI lib
                 // is passed a list of strings that are already cut to length. But this will do for
