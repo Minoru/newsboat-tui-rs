@@ -18,7 +18,7 @@ use crate::stateful_list::StatefulList;
 /// List of feeds.
 pub struct FeedList {
     /// The state of the feedlist (what items it contains, what item is currently selected)
-    pub state: StatefulList,
+    state: StatefulList,
 }
 
 impl FeedList {

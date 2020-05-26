@@ -18,7 +18,7 @@ use crate::stateful_list::StatefulList;
 /// List of items.
 pub struct ItemList {
     /// The state of the itemlist (what items it contains, what item is currently selected)
-    pub state: StatefulList,
+    state: StatefulList,
 }
 
 impl ItemList {
