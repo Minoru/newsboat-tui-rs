@@ -27,7 +27,7 @@ impl TextLineState {
     ///
     /// Note that counting starts from zero, and the cursor is always at the position where a new
     /// char will be inserted. E.g. for empty string, cursor is at position 0.
-    pub fn cursor_position(self) -> usize {
+    pub fn cursor_position(&self) -> usize {
         self.cursor_position
     }
 
@@ -98,6 +98,10 @@ impl TextLine {
 impl StatefulWidget for TextLine {
     type State = TextLineState;
 
+    // TODO: make sure the cursor position is visible; skip some leading or trailing text if needed
+    //      Will have to update feed_list::draw() to use the same algorithm
+    //      Perhaps encapsulate the algorithm into a public function that can be used from outside
+    //      to figure out where the cursor should be put
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
         buf.set_string(area.left(), area.top(), &state.text, Style::default());
     }

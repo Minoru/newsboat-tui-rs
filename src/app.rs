@@ -7,10 +7,25 @@ use tui::{backend::Backend, terminal::Frame};
 use crate::feed_list::FeedList;
 use crate::form_action::FormAction;
 
+/// Cursor's coordinates on the screen.
+pub struct CursorPosition {
+    /// Offset from left margin of the terminal window.
+    pub x: u16,
+
+    /// Offset from top margin of the terminal window.
+    pub y: u16,
+}
+
 /// State of our application.
 pub struct App<B: Backend> {
     /// Should we quit on the next iteration of the event loop?
     pub should_quit: bool,
+
+    /// The coordinates at which the cursor should be put after drawing a frame. This implies that
+    /// the cursor will be visible.
+    ///
+    /// If None, cursor is hidden and its position is managed by tui-rs.
+    pub cursor_position: Option<CursorPosition>,
 
     /// Stack of open formactions.
     ///
@@ -39,6 +54,7 @@ impl<B: Backend> App<B> {
     pub fn new() -> App<B> {
         App {
             should_quit: false,
+            cursor_position: None,
             formaction_stack: vec![Rc::new(RefCell::new(FeedList::new()))],
         }
     }
@@ -71,8 +87,13 @@ impl<B: Backend> App<B> {
 
     /// Draw the app to the screen `frame`.
     pub fn draw(&mut self, frame: &mut Frame<B>) {
-        self.with_current_formaction(|formaction, _app| {
-            formaction.borrow_mut().draw(frame);
+        // NOTE: It's impossible to show/hide cursor via `Frame`: we need a `Backend` for that.
+        // Technically, `Frame` contains `Terminal` which contains `Backend`, so it should be
+        // possible, but `Frame` and `Terminal` don't provide necessary access. In the meantime,
+        // we're passing the whole `App` into a `draw()` call so it can change a bool in `App`,
+        // which is then used by the even loop to call a method on `Terminal`.
+        self.with_current_formaction(|formaction, app| {
+            formaction.borrow_mut().draw(frame, app);
         });
     }
 }

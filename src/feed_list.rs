@@ -10,7 +10,7 @@ use tui::{
     Frame,
 };
 
-use crate::app::App;
+use crate::app::{App, CursorPosition};
 use crate::form_action::FormAction;
 use crate::item_list::ItemList;
 use crate::stateful_list::StatefulList;
@@ -48,7 +48,7 @@ impl FeedList {
 }
 
 impl<B: Backend> FormAction<B> for FeedList {
-    fn draw(&mut self, frame: &mut Frame<B>) {
+    fn draw(&mut self, frame: &mut Frame<B>, app: &mut App<B>) {
         let layout = Layout::default()
             .constraints(
                 [
@@ -100,6 +100,22 @@ impl<B: Backend> FormAction<B> for FeedList {
         {
             let command_line = text_line::TextLine::new();
             frame.render_stateful_widget(command_line, layout[3], &mut self.cli_state);
+
+            app.cursor_position = Some(CursorPosition {
+                x: layout[3]
+                    // x+cursor_position, with careful type conversions:
+                    // - cursor_position is usize, so we limit it to u16::MAX
+                    // - u16+u16 won't fit into u16. Since we just want the cursor at the end of
+                    //   the text, we're using saturating addition to put cursor as far right as we
+                    //   possibly can
+                    .x
+                    .saturating_add(self.cli_state.cursor_position().min(u16::MAX as usize) as u16)
+                    // If the screen is too narrow, not the entire line will be visible. Just put
+                    // the cursor at the rightmost edge.
+                    // TODO: update this to match the algorithm in widgets::TextLine.
+                    .min(layout[3].width),
+                y: layout[3].y,
+            });
         }
     }
 
