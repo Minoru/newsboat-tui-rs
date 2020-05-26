@@ -14,19 +14,23 @@ use crate::app::App;
 use crate::form_action::FormAction;
 use crate::item_list::ItemList;
 use crate::stateful_list::StatefulList;
+use crate::widgets::text_line;
 
 /// List of feeds.
 pub struct FeedList {
     /// The state of the feedlist (what items it contains, what item is currently selected)
-    state: StatefulList,
+    list_state: StatefulList,
+
+    /// The state of the command line (what text is shown, where is the cursor)
+    cli_state: text_line::TextLineState,
 }
 
 impl FeedList {
     /// Create example feedlist.
     pub fn new() -> FeedList {
-        let mut state = StatefulList::new();
+        let mut list_state = StatefulList::new();
 
-        state.items = vec![
+        list_state.items = vec![
             "   1    (14/532) Planet Debian".to_string(),
             "   2       (0/1) Интересное на ДОУ".to_string(),
             "   3 N (23/4558) Fabio Franchino’s blog".to_string(),
@@ -34,9 +38,12 @@ impl FeedList {
             "   5    (12/482) /dev/lawyer".to_string(),
             "   6 N   (3/148) non-O(n) musings".to_string(),
         ];
-        state.state.select(Some(0));
+        list_state.state.select(Some(0));
 
-        FeedList { state }
+        FeedList {
+            list_state,
+            cli_state: text_line::TextLineState::default(),
+        }
     }
 }
 
@@ -68,14 +75,14 @@ impl<B: Backend> FormAction<B> for FeedList {
 
         {
             let list = List::new(
-                self.state
+                self.list_state
                     .items
                     .iter()
                     .map(|text| Text::styled(text.to_string(), Style::default().fg(Color::Green))),
             )
             .highlight_style(Style::default().fg(Color::White).modifier(Modifier::BOLD));
 
-            frame.render_stateful_widget(list, layout[1], &mut self.state.state);
+            frame.render_stateful_widget(list, layout[1], &mut self.list_state.state);
         }
 
         {
@@ -89,10 +96,16 @@ impl<B: Backend> FormAction<B> for FeedList {
             let paragraph = Paragraph::new(hints.iter()).style(Style::default().bg(Color::Blue));
             frame.render_widget(paragraph, layout[2]);
         }
+
+        {
+            let command_line = text_line::TextLine::new();
+            frame.render_stateful_widget(command_line, layout[3], &mut self.cli_state);
+        }
     }
 
     fn handle_key(&mut self, key: Key, app: &mut App<B>) {
         match key {
+            /*
             Key::Char(c) => match c {
                 'q' => app.should_quit = true,
 
@@ -103,9 +116,21 @@ impl<B: Backend> FormAction<B> for FeedList {
                 _ => {}
             },
 
-            Key::Up => self.state.previous(),
+            Key::Up => self.list_state.previous(),
 
-            Key::Down => self.state.next(),
+            Key::Down => self.list_state.next(),
+            */
+            Key::Char(c) => match c {
+                '\n' => {
+                    if self.cli_state.text() == ":quit" {
+                        app.should_quit = true;
+                    } else {
+                        self.cli_state.set_text(String::new());
+                    }
+                }
+
+                _ => self.cli_state.put_char(c),
+            },
 
             _ => {}
         }

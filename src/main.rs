@@ -12,6 +12,7 @@ mod form_action;
 mod item_list;
 mod item_view;
 mod stateful_list;
+mod widgets;
 
 use app::App;
 use events_source::{Event, EventsSource};
