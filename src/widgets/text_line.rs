@@ -1,6 +1,6 @@
 //! An input field for a single line of plain text.
 
-use tui::{buffer::Buffer, layout::Rect, widgets::StatefulWidget};
+use tui::{buffer::Buffer, layout::Rect, style::Style, widgets::StatefulWidget};
 
 #[derive(Debug, Clone)]
 pub struct TextLineState {
@@ -98,5 +98,7 @@ impl TextLine {
 impl StatefulWidget for TextLine {
     type State = TextLineState;
 
-    fn render(self, _area: Rect, _buf: &mut Buffer, _state: &mut Self::State) {}
+    fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
+        buf.set_string(area.left(), area.top(), &state.text, Style::default());
+    }
 }

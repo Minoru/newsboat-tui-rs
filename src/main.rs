@@ -30,13 +30,13 @@ fn setup_termion_terminal(
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut terminal = setup_termion_terminal()?;
-    terminal.hide_cursor()?;
 
     let mut app = App::new();
 
     let events = EventsSource::new();
     loop {
         terminal.draw(|mut frame| app.draw(&mut frame))?;
+        terminal.show_cursor()?;
 
         match events.next()? {
             Event::Key(key) => app.handle_key(key),

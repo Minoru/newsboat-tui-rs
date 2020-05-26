@@ -1,3 +1,9 @@
+Interesting:
+- to show or hide cursor, one needs Backend. Technically, draw() should have
+  access, because it gets a Frame as argument, which contains Terminal, which
+  contains Backend. But in practice, that stuff is not accessible. I believe
+  Frame should give access to that stuff.
+
 Hard:
 - the API actively discourages storing `Text` values and anything that derives
   from them, e.g. `Paragraph`. (It's discouraged by references; I couldn't
