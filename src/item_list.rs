@@ -41,7 +41,7 @@ impl ItemList {
 }
 
 impl<B: Backend> FormAction<B> for ItemList {
-    fn draw(&mut self, frame: &mut Frame<B>, _app: &mut App<B>) {
+    fn draw(&mut self, frame: &mut Frame<B>) {
         let layout = Layout::default()
             .constraints(
                 [

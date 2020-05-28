@@ -10,7 +10,7 @@ use tui::{
     Frame,
 };
 
-use crate::app::{App, CursorPosition};
+use crate::app::App;
 use crate::form_action::FormAction;
 use crate::item_list::ItemList;
 use crate::stateful_list::StatefulList;
@@ -60,7 +60,7 @@ impl FeedList {
 }
 
 impl<B: Backend> FormAction<B> for FeedList {
-    fn draw(&mut self, frame: &mut Frame<B>, app: &mut App<B>) {
+    fn draw(&mut self, frame: &mut Frame<B>) {
         let layout = Layout::default()
             .constraints(
                 [
@@ -128,9 +128,8 @@ impl<B: Backend> FormAction<B> for FeedList {
 
                 let command_line = text_line::TextLine::new();
                 frame.render_stateful_widget(command_line, line_layout[1], cli_state);
-
-                app.cursor_position = Some(CursorPosition {
-                    x: line_layout[1]
+                frame.set_desired_cursor_position(
+                    line_layout[1]
                         // x+cursor_position, with careful type conversions:
                         // - cursor_position is usize, so we limit it to u16::MAX
                         // - u16+u16 won't fit into u16. Since we just want the cursor at the end of
@@ -142,8 +141,10 @@ impl<B: Backend> FormAction<B> for FeedList {
                         // the cursor at the rightmost edge.
                         // TODO: update this to match the algorithm in widgets::TextLine.
                         .min(line_layout[1].width),
-                    y: line_layout[1].y,
-                });
+                    line_layout[1].y,
+                );
+            } else {
+                frame.hide_cursor();
             }
         }
     }
@@ -177,7 +178,6 @@ impl<B: Backend> FormAction<B> for FeedList {
                             app.should_quit = true;
                         } else {
                             self.focus = Focus::Dialog;
-                            app.cursor_position = None;
                         }
                     }
 

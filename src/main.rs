@@ -36,12 +36,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let events = EventsSource::new();
     loop {
         terminal.draw(|mut frame| app.draw(&mut frame))?;
-        if let Some(ref pos) = app.cursor_position {
-            terminal.show_cursor()?;
-            terminal.set_cursor(pos.x, pos.y)?;
-        } else {
-            terminal.hide_cursor()?;
-        }
 
         match events.next()? {
             Event::Key(key) => app.handle_key(key),

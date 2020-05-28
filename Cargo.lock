@@ -105,8 +105,7 @@ dependencies = [
 [[package]]
 name = "tui"
 version = "0.9.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9533d39bef0ae8f510e8a99d78702e68d1bbf0b98a78ec9740509d287010ae1e"
+source = "git+https://github.com/Minoru/tui-rs.git?branch=feature/91-cursor-control#9bb1aa1c3a1dbbd106612bc49b027872173b5658"
 dependencies = [
  "bitflags",
  "cassowary",

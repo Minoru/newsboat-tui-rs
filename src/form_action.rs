@@ -12,5 +12,5 @@ pub trait FormAction<B: Backend> {
     fn handle_key(&mut self, key: Key, app: &mut App<B>);
 
     /// Draw this formaction onto the `frame`.
-    fn draw(&mut self, frame: &mut Frame<B>, app: &mut App<B>);
+    fn draw(&mut self, frame: &mut Frame<B>);
 }
