@@ -4,7 +4,7 @@ use std::{cell::RefCell, rc::Rc};
 use termion::event::Key;
 use tui::{
     backend::Backend,
-    layout::{Constraint, Layout},
+    layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
     widgets::{List, Paragraph, Text},
     Frame,
@@ -16,13 +16,25 @@ use crate::item_list::ItemList;
 use crate::stateful_list::StatefulList;
 use crate::widgets::text_line;
 
+/// Which widget should process input?
+pub enum Focus {
+    /// Input goes to the feedlist.
+    Dialog,
+
+    /// Input goes to the command line.
+    ///
+    /// Command line has a state that's only useful when the focus is on the command line, so we
+    /// keep it here rather than in `FeedList`.
+    CommandLine(text_line::TextLineState),
+}
+
 /// List of feeds.
 pub struct FeedList {
     /// The state of the feedlist (what items it contains, what item is currently selected)
     list_state: StatefulList,
 
-    /// The state of the command line (what text is shown, where is the cursor)
-    cli_state: text_line::TextLineState,
+    /// Which widget should process input?
+    focus: Focus,
 }
 
 impl FeedList {
@@ -42,7 +54,7 @@ impl FeedList {
 
         FeedList {
             list_state,
-            cli_state: text_line::TextLineState::default(),
+            focus: Focus::Dialog,
         }
     }
 }
@@ -98,57 +110,82 @@ impl<B: Backend> FormAction<B> for FeedList {
         }
 
         {
-            let command_line = text_line::TextLine::new();
-            frame.render_stateful_widget(command_line, layout[3], &mut self.cli_state);
+            if let Focus::CommandLine(ref mut cli_state) = self.focus {
+                let line_layout = Layout::default()
+                    .constraints(
+                        [
+                            Constraint::Length(1), // Colon
+                            Constraint::Min(0),    // Text input
+                        ]
+                        .as_ref(),
+                    )
+                    .direction(Direction::Horizontal)
+                    .split(layout[3]);
 
-            app.cursor_position = Some(CursorPosition {
-                x: layout[3]
-                    // x+cursor_position, with careful type conversions:
-                    // - cursor_position is usize, so we limit it to u16::MAX
-                    // - u16+u16 won't fit into u16. Since we just want the cursor at the end of
-                    //   the text, we're using saturating addition to put cursor as far right as we
-                    //   possibly can
-                    .x
-                    .saturating_add(self.cli_state.cursor_position().min(u16::MAX as usize) as u16)
-                    // If the screen is too narrow, not the entire line will be visible. Just put
-                    // the cursor at the rightmost edge.
-                    // TODO: update this to match the algorithm in widgets::TextLine.
-                    .min(layout[3].width),
-                y: layout[3].y,
-            });
+                let colon = [Text::raw(":")];
+                let paragraph = Paragraph::new(colon.iter());
+                frame.render_widget(paragraph, line_layout[0]);
+
+                let command_line = text_line::TextLine::new();
+                frame.render_stateful_widget(command_line, line_layout[1], cli_state);
+
+                app.cursor_position = Some(CursorPosition {
+                    x: line_layout[1]
+                        // x+cursor_position, with careful type conversions:
+                        // - cursor_position is usize, so we limit it to u16::MAX
+                        // - u16+u16 won't fit into u16. Since we just want the cursor at the end of
+                        //   the text, we're using saturating addition to put cursor as far right as we
+                        //   possibly can
+                        .x
+                        .saturating_add(cli_state.cursor_position().min(u16::MAX as usize) as u16)
+                        // If the screen is too narrow, not the entire line will be visible. Just put
+                        // the cursor at the rightmost edge.
+                        // TODO: update this to match the algorithm in widgets::TextLine.
+                        .min(line_layout[1].width),
+                    y: line_layout[1].y,
+                });
+            }
         }
     }
 
     fn handle_key(&mut self, key: Key, app: &mut App<B>) {
-        match key {
-            /*
-            Key::Char(c) => match c {
-                'q' => app.should_quit = true,
+        match self.focus {
+            Focus::Dialog => match key {
+                Key::Char(c) => match c {
+                    'q' => app.should_quit = true,
 
-                '\n' => app
-                    .formaction_stack
-                    .push(Rc::new(RefCell::new(ItemList::new()))),
+                    ':' => self.focus = Focus::CommandLine(text_line::TextLineState::default()),
+
+                    '\n' => app
+                        .formaction_stack
+                        .push(Rc::new(RefCell::new(ItemList::new()))),
+
+                    _ => {}
+                },
+
+                Key::Up => self.list_state.previous(),
+
+                Key::Down => self.list_state.next(),
 
                 _ => {}
             },
 
-            Key::Up => self.list_state.previous(),
-
-            Key::Down => self.list_state.next(),
-            */
-            Key::Char(c) => match c {
-                '\n' => {
-                    if self.cli_state.text() == ":quit" {
-                        app.should_quit = true;
-                    } else {
-                        self.cli_state.set_text(String::new());
+            Focus::CommandLine(ref mut cli_state) => match key {
+                Key::Char(c) => match c {
+                    '\n' => {
+                        if cli_state.text() == "quit" {
+                            app.should_quit = true;
+                        } else {
+                            self.focus = Focus::Dialog;
+                            app.cursor_position = None;
+                        }
                     }
-                }
 
-                _ => self.cli_state.put_char(c),
+                    _ => cli_state.put_char(c),
+                },
+
+                _ => {}
             },
-
-            _ => {}
         }
     }
 }
