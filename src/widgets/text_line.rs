@@ -18,6 +18,10 @@ impl Default for TextLineState {
 }
 
 impl TextLineState {
+    // This API is incomplete, e.g. it lacks full cursor control. For this demo, we simply don't
+    // care; all of those functions are trivial to add and don't have an impact on our evaluation
+    // of tui-rs.
+
     /// Currently entered text.
     pub fn text(&self) -> &str {
         &self.text
@@ -31,12 +35,6 @@ impl TextLineState {
         self.cursor_position
     }
 
-    /// Set the text and puts the cursor one char past the end.
-    pub fn set_text(&mut self, new_text: String) {
-        self.text = new_text;
-        self.cursor_position = self.text.len();
-    }
-
     /// Clip cursor position to interval of [0; text_length].
     fn reestablish_cursor_position_invariants(&mut self) {
         self.cursor_position = self
@@ -48,7 +46,7 @@ impl TextLineState {
     /// Move cursor to the given position.
     ///
     /// The position is clipped into the interval of [0; text_length].
-    pub fn set_cursor_position(&mut self, new_position: usize) {
+    fn set_cursor_position(&mut self, new_position: usize) {
         self.cursor_position = new_position;
         self.reestablish_cursor_position_invariants();
     }
@@ -59,29 +57,8 @@ impl TextLineState {
         self.move_right(1);
     }
 
-    /// Remove the character under cursor. Does nothing if there is no character under the cursor.
-    pub fn delete_current_char(&mut self) {
-        if self.cursor_position < self.text.len() {
-            self.text.remove(self.cursor_position);
-            self.reestablish_cursor_position_invariants();
-        }
-    }
-
-    /// Remove the character to the left of cursor. Does nothing if there is no character there.
-    pub fn delete_previous_char(&mut self) {
-        if self.cursor_position != 0 {
-            self.text.remove(self.cursor_position - 1);
-            self.move_left(1);
-        }
-    }
-
-    /// Move cursor to the left by `offset` characters. Stops at the beginning of the text.
-    pub fn move_left(&mut self, offset: usize) {
-        self.set_cursor_position(self.cursor_position.saturating_sub(offset));
-    }
-
     /// Move cursor to the right by `offset` characters. Stop at the end of the text.
-    pub fn move_right(&mut self, offset: usize) {
+    fn move_right(&mut self, offset: usize) {
         self.set_cursor_position(self.cursor_position.saturating_add(offset));
     }
 }
