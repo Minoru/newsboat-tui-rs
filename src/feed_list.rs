@@ -130,17 +130,15 @@ impl<B: Backend> FormAction<B> for FeedList {
                 frame.render_stateful_widget(command_line, line_layout[1], cli_state);
                 frame.set_desired_cursor_position(
                     line_layout[1]
-                        // x+cursor_position, with careful type conversions:
-                        // - cursor_position is usize, so we limit it to u16::MAX
+                        // x+cursor_offset, with careful type conversions:
+                        // - cursor_offset is usize, so we limit it to u16::MAX
                         // - u16+u16 won't fit into u16. Since we just want the cursor at the end of
                         //   the text, we're using saturating addition to put cursor as far right as we
                         //   possibly can
                         .x
-                        .saturating_add(cli_state.cursor_position().min(u16::MAX as usize) as u16)
-                        // If the screen is too narrow, not the entire line will be visible. Just put
-                        // the cursor at the rightmost edge.
-                        // TODO: update this to match the algorithm in widgets::TextLine.
-                        .min(line_layout[1].width),
+                        .saturating_add(
+                            cli_state.cursor_display_offset().min(u16::MAX as usize) as u16
+                        ),
                     line_layout[1].y,
                 );
             } else {
