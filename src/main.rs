@@ -1,5 +1,6 @@
 use std::{error::Error, io};
 use termion::{
+    event::Key,
     raw::{IntoRawMode, RawTerminal},
     screen::AlternateScreen,
 };
@@ -38,7 +39,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         terminal.draw(|mut frame| app.draw(&mut frame))?;
 
         match events.next()? {
-            Event::Key(key) => app.handle_key(key),
+            Event::Key(key) => match key {
+                Key::Ctrl(c) => match c {
+                    'v' => app.cycle_to_next_formaction(),
+                    'g' => app.cycle_to_previous_formaction(),
+
+                    _ => app.handle_key(key),
+                },
+
+                _ => app.handle_key(key),
+            },
 
             Event::TerminalResized => {
                 // Do nothing. We'll redraw the UI on the next iteration anyway.
