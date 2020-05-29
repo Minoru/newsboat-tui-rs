@@ -31,7 +31,7 @@ pub struct App<B: Backend> {
     // Doing this naively would violate borrow checking rules, because we'd borrow App twice:
     // 1. once to get to the contents of formaction_stack;
     // 2. second time to form a parameter to the method.
-    pub formaction_stack: Vec<Rc<RefCell<dyn FormAction<B>>>>,
+    formaction_stack: Vec<Rc<RefCell<dyn FormAction<B>>>>,
 }
 
 impl<B: Backend> App<B> {
@@ -74,5 +74,15 @@ impl<B: Backend> App<B> {
         self.with_current_formaction(|formaction, _app| {
             formaction.borrow_mut().draw(frame);
         });
+    }
+
+    /// Add given formaction to the top of the stack, i.e. make it the new current formaction.
+    pub fn add_formaction(&mut self, formaction: Rc<RefCell<dyn FormAction<B>>>) {
+        self.formaction_stack.push(formaction);
+    }
+
+    /// Remove current formaction from the stack. Does nothing if the stack is empty.
+    pub fn quit_current_formaction(&mut self) {
+        let _ = self.formaction_stack.pop();
     }
 }

@@ -155,9 +155,7 @@ impl<B: Backend> FormAction<B> for FeedList {
 
                     ':' => self.focus = Focus::CommandLine(text_line::TextLineState::default()),
 
-                    '\n' => app
-                        .formaction_stack
-                        .push(Rc::new(RefCell::new(ItemList::new()))),
+                    '\n' => app.add_formaction(Rc::new(RefCell::new(ItemList::new()))),
 
                     _ => {}
                 },

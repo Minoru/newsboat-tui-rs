@@ -98,16 +98,9 @@ impl<B: Backend> FormAction<B> for ItemList {
     fn handle_key(&mut self, key: Key, app: &mut App<B>) {
         match key {
             Key::Char(c) => match c {
-                'q' => {
-                    // The key got passed to us, which means we're on top of the stack. Thus, we're
-                    // sure this returns Some() with an Rc that holds us. We drop it, thus this dialog
-                    // is removed and cleaned up.
-                    let _ = app.formaction_stack.pop();
-                }
+                'q' => app.quit_current_formaction(),
 
-                '\n' => app
-                    .formaction_stack
-                    .push(Rc::new(RefCell::new(ItemView::new()))),
+                '\n' => app.add_formaction(Rc::new(RefCell::new(ItemView::new()))),
 
                 _ => {}
             },

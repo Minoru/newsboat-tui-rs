@@ -99,12 +99,7 @@ impl<B: Backend> FormAction<B> for ItemView {
 
     fn handle_key(&mut self, key: Key, app: &mut App<B>) {
         match key {
-            Key::Char(c) if c == 'q' => {
-                // The key got passed to us, which means we're on top of the stack. Thus, we're
-                // sure this returns Some() with an Rc that holds us. We drop it, thus this dialog
-                // is removed and cleaned up.
-                let _ = app.formaction_stack.pop();
-            }
+            Key::Char(c) if c == 'q' => app.quit_current_formaction(),
 
             // This lets us scroll past the end of the article, but for a demo, I don't care.
             Key::Up => self.scroll_offset = self.scroll_offset.saturating_sub(1),
