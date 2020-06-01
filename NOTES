@@ -7,6 +7,32 @@ Hard:
   hand, should contain formatting (although it can't properly in tui-rs);
   re-formatting the whole article on each repaint is... wrong.
 
-Unimplementable:
+- not yet sure how to cede stdin and stdout to another program. There are two
+  problems:
+
+  1. tui-rs wants an instance of `Backend`, which in our case is an stdout
+     that's already switched to the alternate screen. We could print out some
+     escape sequences to switch back to the main screen, and then switch back,
+     but I'm not sure if Termion/tui-rs won't get confused by this.
+
+  2. we have a long-running thread that's constantly blocked on reading from
+     stdin. We need a way to signal to this thread that it should unblock and
+     give the other program a chance to use stdin.
+
+     Possible solution: use two-way channel between event loop and reader thread:
+
+     - thread is blocked on stdin, event loop is blocked on channel
+     - thread reads a character from stdin, sends it into a channel, blocks on
+       another channel
+     - event loop reads from the channel, passes the character to app.handle_key
+
+       at this point, stdin is yielded, so key handler can relinquish stdout to
+       another program
+
+     - handle_key returns, event loop writes into another channel
+     - thread unblocks, attempts reading from stdin again; this loops back to
+       step 1
+
+Unimplementable (or so I think):
 - implement highlighting keywords in itemlist -- https://github.com/fdehau/tui-rs/issues/118
     - see if I can get around this my implementing my own list widget
