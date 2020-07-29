@@ -5,7 +5,8 @@ use tui::{
     backend::Backend,
     layout::{Constraint, Layout},
     style::{Color, Modifier, Style},
-    widgets::{Paragraph, Text},
+    text::{Span, Spans},
+    widgets::{Paragraph, Wrap},
     Frame,
 };
 
@@ -51,48 +52,48 @@ impl<B: Backend> FormAction<B> for ItemView {
             .split(frame.size());
 
         {
-            let title = [Text::styled(
+            let title = Span::styled(
                 "Newsboat 2.20 (ну, почти) - Article 'Lorem Ipsum' (0 unread, 0 total)",
                 Style::default()
                     .fg(Color::Yellow)
                     .bg(Color::Blue)
-                    .modifier(Modifier::BOLD),
-            )];
-            let paragraph = Paragraph::new(title.iter()).style(Style::default().bg(Color::Blue));
+                    .add_modifier(Modifier::BOLD),
+            );
+            let paragraph = Paragraph::new(title).style(Style::default().bg(Color::Blue));
             frame.render_widget(paragraph, layout[0]);
         }
 
         {
             let text = {
                 let mut text = vec![
-                    Text::raw("Feed: Example feed\n"),
-                    Text::raw("Title: An interesting article\n"),
-                    Text::raw("Link: https://example.com/an-interesting-article.html\n"),
-                    Text::raw("Date: Mon, 02 Mar 2004 05:06:07 +0800\n"),
-                    Text::raw("\n"),
+                    Span::raw("Feed: Example feed\n"),
+                    Span::raw("Title: An interesting article\n"),
+                    Span::raw("Link: https://example.com/an-interesting-article.html\n"),
+                    Span::raw("Date: Mon, 02 Mar 2004 05:06:07 +0800\n"),
+                    Span::raw("\n"),
                 ];
-                text.extend(self.text.iter().map(Text::raw));
-                text
+                text.extend(self.text.iter().map(Span::raw));
+                Spans::from(text)
             };
 
-            let paragraph = Paragraph::new(text.iter())
+            let paragraph = Paragraph::new(text)
                 // This is cheating. In real Newsboat, word wrapping is done beforehand, and UI lib
                 // is passed a list of strings that are already cut to length. But this will do for
                 // demonstration purposes.
-                .wrap(true)
-                .scroll(self.scroll_offset);
+                .wrap(Wrap { trim: false })
+                .scroll((0, self.scroll_offset));
             frame.render_widget(paragraph, layout[1]);
         }
 
         {
-            let hints = [Text::styled(
+            let hints = Span::styled(
                 "q:Quit UP:Scroll up DOWN:Scroll down",
                 Style::default()
                     .fg(Color::Yellow)
                     .bg(Color::Blue)
-                    .modifier(Modifier::BOLD),
-            )];
-            let paragraph = Paragraph::new(hints.iter()).style(Style::default().bg(Color::Blue));
+                    .add_modifier(Modifier::BOLD),
+            );
+            let paragraph = Paragraph::new(hints).style(Style::default().bg(Color::Blue));
             frame.render_widget(paragraph, layout[2]);
         }
     }

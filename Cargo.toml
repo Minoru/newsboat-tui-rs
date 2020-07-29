@@ -9,6 +9,6 @@ license = "MIT"
 
 [dependencies]
 termion = "1"
-tui = { git = "https://github.com/Minoru/tui-rs.git", branch = "feature/91-cursor-control" }
+tui = "0.10"
 signal-hook = "0.1"
 libc = "0.2"

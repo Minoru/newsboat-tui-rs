@@ -6,7 +6,8 @@ use tui::{
     backend::Backend,
     layout::{Constraint, Layout},
     style::{Color, Modifier, Style},
-    widgets::{List, Paragraph, Text},
+    text::Span,
+    widgets::{List, ListItem, Paragraph, Wrap},
     Frame,
 };
 
@@ -55,15 +56,15 @@ impl<B: Backend> FormAction<B> for ItemList {
             .split(frame.size());
 
         {
-            let title = [Text::styled(
+            let title = Span::styled(
                 "Newsboat 2.20 (ну, почти) - Example Feed (0 unread, 0 total)",
                 Style::default()
                     .fg(Color::Yellow)
                     .bg(Color::Blue)
-                    .modifier(Modifier::BOLD),
-            )];
-            let paragraph = Paragraph::new(title.iter())
-                .wrap(true)
+                    .add_modifier(Modifier::BOLD),
+            );
+            let paragraph = Paragraph::new(title)
+                .wrap(Wrap { trim: false })
                 .style(Style::default().bg(Color::Blue));
             frame.render_widget(paragraph, layout[0]);
         }
@@ -73,23 +74,33 @@ impl<B: Backend> FormAction<B> for ItemList {
                 self.state
                     .items
                     .iter()
-                    .map(|text| Text::styled(text.to_string(), Style::default().fg(Color::Green))),
+                    .map(|text| {
+                        ListItem::new(Span::styled(
+                            text.to_string(),
+                            Style::default().fg(Color::Green),
+                        ))
+                    })
+                    .collect::<Vec<_>>(),
             )
-            .highlight_style(Style::default().fg(Color::White).modifier(Modifier::BOLD));
+            .highlight_style(
+                Style::default()
+                    .fg(Color::White)
+                    .add_modifier(Modifier::BOLD),
+            );
 
             frame.render_stateful_widget(list, layout[1], &mut self.state.state);
         }
 
         {
-            let hints = [Text::styled(
+            let hints = Span::styled(
                 "q:Quit UP:Previous DOWN:Next ENTER:Open",
                 Style::default()
                     .fg(Color::Yellow)
                     .bg(Color::Blue)
-                    .modifier(Modifier::BOLD),
-            )];
-            let paragraph = Paragraph::new(hints.iter())
-                .wrap(true)
+                    .add_modifier(Modifier::BOLD),
+            );
+            let paragraph = Paragraph::new(hints)
+                .wrap(Wrap { trim: false })
                 .style(Style::default().bg(Color::Blue));
             frame.render_widget(paragraph, layout[2]);
         }

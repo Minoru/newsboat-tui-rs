@@ -6,7 +6,8 @@ use tui::{
     backend::Backend,
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
-    widgets::{List, Paragraph, Text},
+    text::Span,
+    widgets::{List, ListItem, Paragraph},
     Frame,
 };
 
@@ -74,14 +75,14 @@ impl<B: Backend> FormAction<B> for FeedList {
             .split(frame.size());
 
         {
-            let title = [Text::styled(
+            let title = Span::styled(
                 "Newsboat 2.20 (ну, почти) - Your Feeds (0 unread, 0 total)",
                 Style::default()
                     .fg(Color::Yellow)
                     .bg(Color::Blue)
-                    .modifier(Modifier::BOLD),
-            )];
-            let paragraph = Paragraph::new(title.iter()).style(Style::default().bg(Color::Blue));
+                    .add_modifier(Modifier::BOLD),
+            );
+            let paragraph = Paragraph::new(title).style(Style::default().bg(Color::Blue));
             frame.render_widget(paragraph, layout[0]);
         }
 
@@ -90,22 +91,32 @@ impl<B: Backend> FormAction<B> for FeedList {
                 self.list_state
                     .items
                     .iter()
-                    .map(|text| Text::styled(text.to_string(), Style::default().fg(Color::Green))),
+                    .map(|text| {
+                        ListItem::new(Span::styled(
+                            text.to_string(),
+                            Style::default().fg(Color::Green),
+                        ))
+                    })
+                    .collect::<Vec<_>>(),
             )
-            .highlight_style(Style::default().fg(Color::White).modifier(Modifier::BOLD));
+            .highlight_style(
+                Style::default()
+                    .fg(Color::White)
+                    .add_modifier(Modifier::BOLD),
+            );
 
             frame.render_stateful_widget(list, layout[1], &mut self.list_state.state);
         }
 
         {
-            let hints = [Text::styled(
+            let hints = Span::styled(
                 "q:Quit UP:Previous DOWN:Next ENTER:Open",
                 Style::default()
                     .fg(Color::Yellow)
                     .bg(Color::Blue)
-                    .modifier(Modifier::BOLD),
-            )];
-            let paragraph = Paragraph::new(hints.iter()).style(Style::default().bg(Color::Blue));
+                    .add_modifier(Modifier::BOLD),
+            );
+            let paragraph = Paragraph::new(hints).style(Style::default().bg(Color::Blue));
             frame.render_widget(paragraph, layout[2]);
         }
 
@@ -122,13 +133,12 @@ impl<B: Backend> FormAction<B> for FeedList {
                     .direction(Direction::Horizontal)
                     .split(layout[3]);
 
-                let colon = [Text::raw(":")];
-                let paragraph = Paragraph::new(colon.iter());
+                let paragraph = Paragraph::new(Span::raw(":"));
                 frame.render_widget(paragraph, line_layout[0]);
 
                 let command_line = text_line::TextLine::new();
                 frame.render_stateful_widget(command_line, line_layout[1], cli_state);
-                frame.set_desired_cursor_position(
+                frame.set_cursor(
                     line_layout[1]
                         // x+cursor_offset, with careful type conversions:
                         // - cursor_offset is usize, so we limit it to u16::MAX
@@ -141,8 +151,6 @@ impl<B: Backend> FormAction<B> for FeedList {
                         ),
                     line_layout[1].y,
                 );
-            } else {
-                frame.hide_cursor();
             }
         }
     }
