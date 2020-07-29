@@ -84,7 +84,7 @@ impl<B: Backend> FormAction<B> for ItemView {
                 // is passed a list of strings that are already cut to length. But this will do for
                 // demonstration purposes.
                 .wrap(Wrap { trim: false })
-                .scroll((0, self.scroll_offset));
+                .scroll((self.scroll_offset, 0));
             frame.render_widget(paragraph, layout[1]);
         }
 
