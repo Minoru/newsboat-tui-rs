@@ -65,15 +65,18 @@ impl<B: Backend> FormAction<B> for ItemView {
 
         {
             let text = {
-                let mut text = vec![
-                    Span::raw("Feed: Example feed\n"),
-                    Span::raw("Title: An interesting article\n"),
-                    Span::raw("Link: https://example.com/an-interesting-article.html\n"),
-                    Span::raw("Date: Mon, 02 Mar 2004 05:06:07 +0800\n"),
-                    Span::raw("\n"),
+                let header = [
+                    "Feed: Example feed\n",
+                    "Title: An interesting article\n",
+                    "Link: https://example.com/an-interesting-article.html\n",
+                    "Date: Mon, 02 Mar 2004 05:06:07 +0800\n",
+                    "\n",
                 ];
-                text.extend(self.text.iter().map(Span::raw));
-                Spans::from(text)
+
+                let mut result = vec![];
+                result.extend(header.iter().map(|x| Span::raw(*x)).map(Spans::from));
+                result.extend(self.text.iter().map(Span::raw).map(Spans::from));
+                result
             };
 
             let paragraph = Paragraph::new(text)
