@@ -2,7 +2,7 @@ use std::{error::Error, io};
 use termion::{
     event::Key,
     raw::{IntoRawMode, RawTerminal},
-    screen::AlternateScreen,
+    screen::{AlternateScreen, IntoAlternateScreen},
 };
 use tui::{backend::TermionBackend, Terminal};
 
@@ -22,7 +22,7 @@ use events_source::{Event, EventsSource};
 fn setup_termion_terminal(
 ) -> Result<Terminal<TermionBackend<AlternateScreen<RawTerminal<io::Stdout>>>>, io::Error> {
     let stdout = io::stdout().into_raw_mode()?;
-    let stdout = AlternateScreen::from(stdout);
+    let stdout = stdout.into_alternate_screen()?;
 
     let backend = TermionBackend::new(stdout);
 

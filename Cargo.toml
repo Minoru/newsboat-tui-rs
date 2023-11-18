@@ -8,7 +8,7 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-termion = "1"
+termion = "2"
 tui = "0.10"
 signal-hook = "0.3"
 libc = "0.2"
