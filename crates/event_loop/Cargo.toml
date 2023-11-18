@@ -10,7 +10,12 @@ license = "MIT"
 [dependencies]
 ui = { path = "../ui" }
 
-termion = "2"
-ratatui = { version = "0.24", default-features = false, features = ["termion"] }
+termion = { version = "2", optional = true }
+crossterm = { version = "0.27", optional = true }
+ratatui = { version = "0.24", default-features = false }
 signal-hook = "0.3"
 libc = "0.2"
+
+[features]
+termion = ["dep:termion", "ratatui/termion"]
+crossterm = ["dep:crossterm", "ratatui/crossterm"]
