@@ -9,9 +9,9 @@ use ratatui::{
     Frame,
 };
 use std::{cell::RefCell, rc::Rc};
-use termion::event::Key;
 
 use crate::app::App;
+use crate::event::Key;
 use crate::form_action::FormAction;
 use crate::item_list::ItemList;
 use crate::stateful_list::StatefulList;

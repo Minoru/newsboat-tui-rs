@@ -2,8 +2,8 @@
 
 use ratatui::{backend::Backend, terminal::Frame};
 use std::{cell::RefCell, rc::Rc};
-use termion::event::Key;
 
+use crate::event::Key;
 use crate::feed_list::FeedList;
 use crate::form_action::FormAction;
 

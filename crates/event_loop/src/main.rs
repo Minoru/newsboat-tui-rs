@@ -1,15 +1,17 @@
 use ratatui::{backend::TermionBackend, Terminal};
 use std::{error::Error, io};
 use termion::{
-    event::Key,
     raw::{IntoRawMode, RawTerminal},
     screen::{AlternateScreen, IntoAlternateScreen},
 };
 
 mod events_source;
 
-use ui::app::App;
-use events_source::{Event, EventsSource};
+use events_source::EventsSource;
+use ui::{
+    app::App,
+    event::{Event, Key},
+};
 
 /// Setup a termion terminal with alternate screen enabled.
 fn setup_termion_terminal(
@@ -33,9 +35,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         match events.next()? {
             Event::Key(key) => match key {
-                Key::Ctrl(c) => match c {
-                    'v' => app.cycle_to_next_formaction(),
-                    'g' => app.cycle_to_previous_formaction(),
+                Key::Ctrl(ref c) => match **c {
+                    Key::Char('v') => app.cycle_to_next_formaction(),
+                    Key::Char('g') => app.cycle_to_previous_formaction(),
 
                     _ => app.handle_key(key),
                 },

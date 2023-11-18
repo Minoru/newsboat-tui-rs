@@ -8,9 +8,9 @@ use ratatui::{
     widgets::{Paragraph, Wrap},
     Frame,
 };
-use termion::event::Key;
 
 use crate::app::App;
+use crate::event::Key;
 use crate::form_action::FormAction;
 
 /// A dialog displaying an article.

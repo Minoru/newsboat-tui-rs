@@ -1,9 +1,9 @@
 //! A trait that each "formaction" (dialog) implements.
 
 use ratatui::{backend::Backend, terminal::Frame};
-use termion::event::Key;
 
 use crate::app::App;
+use crate::event::Key;
 
 /// A trait that each "formaction" (dialog) implements.
 pub trait FormAction<B: Backend> {

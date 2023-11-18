@@ -5,15 +5,31 @@ use signal_hook::iterator::Signals;
 use std::{io, sync::mpsc, thread};
 use termion::input::TermRead;
 
-/// Events that this watcher can report.
-pub enum Event {
-    /// User pressed a key.
-    Key(termion::event::Key),
+use ui::event::Event;
 
-    /// Terminal changed size.
-    ///
-    /// This is SIGWINCH.
-    TerminalResized,
+fn try_termion_key_to_ours(key: termion::event::Key) -> Option<ui::event::Key> {
+    use ui::event::Key;
+    match key {
+        termion::event::Key::Backspace => Some(Key::Backspace),
+        termion::event::Key::Left => Some(Key::Left),
+        termion::event::Key::Right => Some(Key::Right),
+        termion::event::Key::Up => Some(Key::Up),
+        termion::event::Key::Down => Some(Key::Down),
+        termion::event::Key::Home => Some(Key::Home),
+        termion::event::Key::End => Some(Key::End),
+        termion::event::Key::PageUp => Some(Key::PageUp),
+        termion::event::Key::PageDown => Some(Key::PageDown),
+        termion::event::Key::BackTab => None, // what is this key?
+        termion::event::Key::Delete => Some(Key::Delete),
+        termion::event::Key::Insert => Some(Key::Insert),
+        termion::event::Key::F(f) => Some(Key::F(f)),
+        termion::event::Key::Char(c) => Some(Key::Char(c)),
+        termion::event::Key::Alt(c) => Some(Key::Alt(Box::new(Key::Char(c)))),
+        termion::event::Key::Ctrl(c) => Some(Key::Ctrl(Box::new(Key::Char(c)))),
+        termion::event::Key::Null => None, // what is this key?
+        termion::event::Key::Esc => Some(Key::Esc),
+        _ => None,
+    }
 }
 
 /// Watcher for keypresses and signals.
@@ -35,8 +51,10 @@ impl EventsSource {
                 for event in stdin.keys() {
                     match event {
                         Ok(key) => {
-                            if let Err(_) = tx.send(Event::Key(key)) {
-                                return;
+                            if let Some(key) = try_termion_key_to_ours(key) {
+                                if let Err(_) = tx.send(Event::Key(key)) {
+                                    return;
+                                }
                             }
                         }
 
@@ -71,7 +89,7 @@ impl EventsSource {
         EventsSource { rx }
     }
 
-    /// Get next key (blocking operation)
+    /// Get next event (blocking operation)
     pub fn next(&self) -> Result<Event, mpsc::RecvError> {
         self.rx.recv()
     }
