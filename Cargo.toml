@@ -10,5 +10,5 @@ license = "MIT"
 [dependencies]
 termion = "1"
 tui = "0.10"
-signal-hook = "0.1"
+signal-hook = "0.3"
 libc = "0.2"

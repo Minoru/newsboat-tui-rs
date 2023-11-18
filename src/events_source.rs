@@ -49,7 +49,7 @@ impl EventsSource {
         // A thread that watches out for signals
         {
             let tx = tx.clone();
-            let signals = Signals::new(&[libc::SIGWINCH])
+            let mut signals = Signals::new(&[libc::SIGWINCH])
                 .expect("Something went wrong while registering the handler");
             thread::spawn(move || {
                 for signal in signals.forever() {
