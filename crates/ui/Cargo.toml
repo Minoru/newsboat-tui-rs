@@ -1,5 +1,5 @@
 [package]
-name = "event_loop"
+name = "ui"
 version = "0.1.0"
 authors = ["Alexander Batischev <eual.jp@gmail.com>"]
 edition = "2018"
@@ -8,9 +8,5 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ui = { path = "../ui" }
-
 termion = "2"
 ratatui = { version = "0.24", default-features = false, features = ["termion"] }
-signal-hook = "0.3"
-libc = "0.2"

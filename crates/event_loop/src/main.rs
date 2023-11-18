@@ -6,16 +6,9 @@ use termion::{
     screen::{AlternateScreen, IntoAlternateScreen},
 };
 
-mod app;
 mod events_source;
-mod feed_list;
-mod form_action;
-mod item_list;
-mod item_view;
-mod stateful_list;
-mod widgets;
 
-use app::App;
+use ui::app::App;
 use events_source::{Event, EventsSource};
 
 /// Setup a termion terminal with alternate screen enabled.

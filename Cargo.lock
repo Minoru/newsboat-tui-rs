@@ -58,6 +58,7 @@ dependencies = [
  "ratatui",
  "signal-hook",
  "termion",
+ "ui",
 ]
 
 [[package]]
@@ -254,6 +255,14 @@ dependencies = [
  "libredox",
  "numtoa",
  "redox_termios",
+]
+
+[[package]]
+name = "ui"
+version = "0.1.0"
+dependencies = [
+ "ratatui",
+ "termion",
 ]
 
 [[package]]
