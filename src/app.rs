@@ -1,8 +1,8 @@
 //! State and the behaviour of the application.
 
+use ratatui::{backend::Backend, terminal::Frame};
 use std::{cell::RefCell, rc::Rc};
 use termion::event::Key;
-use tui::{backend::Backend, terminal::Frame};
 
 use crate::feed_list::FeedList;
 use crate::form_action::FormAction;
@@ -82,7 +82,7 @@ impl<B: Backend> App<B> {
     /// # Panics
     ///
     /// Panics if the formaction stack is empty.
-    pub fn draw(&mut self, frame: &mut Frame<B>) {
+    pub fn draw(&mut self, frame: &mut Frame) {
         self.with_current_formaction(|formaction, _app| {
             formaction.borrow_mut().draw(frame);
         });

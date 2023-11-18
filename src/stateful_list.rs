@@ -1,6 +1,6 @@
 //! A list of `String`s, bundled with state from tui-rs.
 
-use tui::widgets::ListState;
+use ratatui::widgets::ListState;
 
 /// A list of `String`s, bundled with state from tui-rs.
 pub struct StatefulList {

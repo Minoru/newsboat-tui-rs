@@ -9,6 +9,6 @@ license = "MIT"
 
 [dependencies]
 termion = "2"
-tui = "0.10"
+ratatui = { version = "0.24", default-features = false, features = ["termion"] }
 signal-hook = "0.3"
 libc = "0.2"

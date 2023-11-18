@@ -1,8 +1,6 @@
 //! List of feeds.
 
-use std::{cell::RefCell, rc::Rc};
-use termion::event::Key;
-use tui::{
+use ratatui::{
     backend::Backend,
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
@@ -10,6 +8,8 @@ use tui::{
     widgets::{List, ListItem, Paragraph},
     Frame,
 };
+use std::{cell::RefCell, rc::Rc};
+use termion::event::Key;
 
 use crate::app::App;
 use crate::form_action::FormAction;
@@ -61,7 +61,7 @@ impl FeedList {
 }
 
 impl<B: Backend> FormAction<B> for FeedList {
-    fn draw(&mut self, frame: &mut Frame<B>) {
+    fn draw(&mut self, frame: &mut Frame) {
         let layout = Layout::default()
             .constraints(
                 [

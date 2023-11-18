@@ -1,14 +1,14 @@
 //! A dialog displaying an article.
 
-use termion::event::Key;
-use tui::{
+use ratatui::{
     backend::Backend,
     layout::{Constraint, Layout},
     style::{Color, Modifier, Style},
-    text::{Span, Spans},
+    text::{Line, Span},
     widgets::{Paragraph, Wrap},
     Frame,
 };
+use termion::event::Key;
 
 use crate::app::App;
 use crate::form_action::FormAction;
@@ -38,7 +38,7 @@ impl ItemView {
 }
 
 impl<B: Backend> FormAction<B> for ItemView {
-    fn draw(&mut self, frame: &mut Frame<B>) {
+    fn draw(&mut self, frame: &mut Frame) {
         let layout = Layout::default()
             .constraints(
                 [
@@ -74,8 +74,8 @@ impl<B: Backend> FormAction<B> for ItemView {
                 ];
 
                 let mut result = vec![];
-                result.extend(header.iter().map(|x| Span::raw(*x)).map(Spans::from));
-                result.extend(self.text.iter().map(Span::raw).map(Spans::from));
+                result.extend(header.iter().map(|x| Span::raw(*x)).map(Line::from));
+                result.extend(self.text.iter().map(Span::raw).map(Line::from));
                 result
             };
 

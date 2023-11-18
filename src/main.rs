@@ -1,10 +1,10 @@
+use ratatui::{backend::TermionBackend, Terminal};
 use std::{error::Error, io};
 use termion::{
     event::Key,
     raw::{IntoRawMode, RawTerminal},
     screen::{AlternateScreen, IntoAlternateScreen},
 };
-use tui::{backend::TermionBackend, Terminal};
 
 mod app;
 mod events_source;
@@ -32,7 +32,7 @@ fn setup_termion_terminal(
 fn main() -> Result<(), Box<dyn Error>> {
     let mut terminal = setup_termion_terminal()?;
 
-    let mut app = App::new();
+    let mut app: App<TermionBackend<AlternateScreen<RawTerminal<io::Stdout>>>> = App::new();
 
     let events = EventsSource::new();
     loop {

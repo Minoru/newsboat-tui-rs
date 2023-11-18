@@ -1,7 +1,7 @@
 //! A trait that each "formaction" (dialog) implements.
 
+use ratatui::{backend::Backend, terminal::Frame};
 use termion::event::Key;
-use tui::{backend::Backend, terminal::Frame};
 
 use crate::app::App;
 
@@ -12,5 +12,5 @@ pub trait FormAction<B: Backend> {
     fn handle_key(&mut self, key: Key, app: &mut App<B>);
 
     /// Draw this formaction onto the `frame`.
-    fn draw(&mut self, frame: &mut Frame<B>);
+    fn draw(&mut self, frame: &mut Frame);
 }

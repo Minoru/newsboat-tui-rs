@@ -1,6 +1,6 @@
 //! An input field for a single line of plain text.
 
-use tui::{buffer::Buffer, layout::Rect, style::Style, widgets::StatefulWidget};
+use ratatui::{buffer::Buffer, layout::Rect, style::Style, widgets::StatefulWidget};
 
 #[derive(Debug, Clone)]
 pub struct TextLineState {
